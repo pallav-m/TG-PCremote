@@ -2,3 +2,4 @@
 .venv
 *.session
 file.txt
+.idea
