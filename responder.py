@@ -10,28 +10,31 @@ from decouple import config
 
 api_id = config('api_id')
 api_hash = config('api_hash')
-authorised_user_id = config('authorised_user_id')
+authorised_user = config('authorised_username')
 
 # setting up telegram client
 client: TelegramClient = TelegramClient('bot', api_id, api_hash)
 
 
-@client.on(events.NewMessage())
+@client.on(events.NewMessage(incoming=True))
 async def ping_handler(event):
     message = event.message.message
     message_id = event.message.from_id
+    sender = await event.get_sender()
 
-    logging.info(f"Received message: {message} from id: {message_id}")
+    logging.info(f"Received message: {message} from id: {message_id.user_id}")
+    logging.info(sender.username)
 
-    if message_id.user_id == authorised_user_id:
+    if (sender.username == authorised_user):
         logging.info(f"Message came from authorised user. Running commands.")
 
+
     else:
-        await client.send_message(message_id.user_id, "You are not authorised.")
+        await client.send_message(sender, "You are not authorised.")
         logging.info(f"Unauthorised user: {message_id}")
 
 
-
 logging.info("starting responder")
-with client:
-    client.run_until_disconnected()
+
+client.start()
+client.run_until_disconnected()
