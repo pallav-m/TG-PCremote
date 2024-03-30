@@ -1,4 +1,4 @@
 .env
 .venv
-.session
-.txt
+*.session
+file.txt
