@@ -1,5 +1,7 @@
 from telethon import events
 from telethon.sync import TelegramClient
+import bash_func as func
+
 
 import logging
 
@@ -27,6 +29,14 @@ async def ping_handler(event):
 
     if (sender.username == authorised_user):
         logging.info(f"Message came from authorised user. Running commands.")
+
+        if func.is_valid_linux_command(message.split()):
+            logging.info("command valid")
+            output = func.run_command(message.split())
+            await event.reply(output)
+        else:
+            logging.info(f"Invalid command passed")
+            await event.reply(f"Invalid command passed")
 
 
     else:
